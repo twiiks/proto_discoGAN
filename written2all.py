@@ -6,7 +6,6 @@ from config import get_config
 from data_loader import get_loader_a
 from utils import prepare_dirs_and_logger, save_config
 
-
 import base64
 
 
@@ -43,7 +42,7 @@ def UnicodeToKoreanClass(unicode):
 # written : [unicode: path]
 def written2all(written):
     STANDARD_L = [0, '', '', '', 'B204', 'BD90', '', '', '', '']
-    output = []
+    output = {}
     for code, path in written.items():
         config, _ = get_config()
         config.data_path = path
@@ -66,7 +65,8 @@ def written2all(written):
         data_path, batch_size, config.input_scale_size, config.num_worker,
         config.skip_pix2pix_processing)
         tester = Tester(config, a_data_loader, name_pth)
-        tester.test()
+        img_AB = tester.test()
+        print(img_AB)
 
 if __name__ == "__main__":
     dic = {0xACE0 : './data/test'}
