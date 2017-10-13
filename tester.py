@@ -48,6 +48,7 @@ class Tester(object):
         self.log_step = config.log_step
         self.max_step = config.max_step
         self.save_step = config.save_step
+        self.name_pth = name_pth
 
         self.build_model()
 
