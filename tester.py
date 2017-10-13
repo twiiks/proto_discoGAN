@@ -131,39 +131,6 @@ class Tester(object):
         vutils.save_image(x_ABA.data, x_ABA_path)
         print("[*] Samples saved: {}".format(x_ABA_path))
 
-    def generate_with_B(self, inputs, path, idx=None):
-        x_BA = self.G_BA(inputs)
-        x_BAB = self.G_AB(x_BA)
-
-        x_BA_path = '{}/{}_x_BA.png'.format(path, idx)
-        x_BAB_path = '{}/{}_x_BAB.png'.format(path, idx)
-
-        vutils.save_image(x_BA.data, x_BA_path)
-        print("[*] Samples saved: {}".format(x_BA_path))
-
-        vutils.save_image(x_BAB.data, x_BAB_path)
-        print("[*] Samples saved: {}".format(x_BAB_path))
-
-    def generate_infinitely(self,
-                            inputs,
-                            path,
-                            input_type,
-                            count=10,
-                            nrow=2,
-                            idx=None):
-        if input_type.lower() == "a":
-            iterator = [self.G_AB, self.G_BA] * count
-        elif input_type.lower() == "b":
-            iterator = [self.G_BA, self.G_AB] * count
-
-        out = inputs
-        for step, model in enumerate(iterator):
-            out = model(out)
-
-            out_path = '{}/{}_x_{}_#{}.png'.format(path, idx, input_type, step)
-            vutils.save_image(out.data, out_path, nrow=nrow)
-            print("[*] Samples saved: {}".format(out_path))
-
     def test(self):
         batch_size = self.config.sample_per_image
         A_loader, B_loader = iter(self.a_data_loader), iter(self.b_data_loader)
