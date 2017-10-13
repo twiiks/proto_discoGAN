@@ -1,5 +1,6 @@
 import torch
 
+from tester import Tester
 from trainer import Trainer
 from config import get_config
 from data_loader import get_loader
