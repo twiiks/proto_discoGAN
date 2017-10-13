@@ -51,7 +51,7 @@ def written2all(written):
         print(config.dataset)
         config.sample_per_image = 1
         uniclass = UnicodeToKoreanClass(code)
-        config.load_path = './pths/%s/' % (STANDARD_L[uniclass])
+        config.load_path = './pths/%s' % (STANDARD_L[uniclass])
 
         name_pth = '%s_%s' % (STANDARD_L[uniclass], config.dataset)
         prepare_dirs_and_logger(config)
