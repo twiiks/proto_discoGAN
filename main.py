@@ -28,6 +28,7 @@ def main(config):
         config.skip_pix2pix_processing)
 
     trainer = Trainer(config, a_data_loader, b_data_loader)
+    tester = Tester(config, a_data_loader)
 
     if config.is_train:
         save_config(config)
@@ -36,7 +37,8 @@ def main(config):
         if not config.load_path:
             raise Exception(
                 "[!] You should specify `load_path` to load a pretrained model")
-        trainer.test()
+        # trainer.test()
+        tester.test()
 
 
 if __name__ == "__main__":
