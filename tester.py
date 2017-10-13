@@ -22,13 +22,12 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-class Trainer(object):
+class Tester(object):
 
-    def __init__(self, config, a_data_loader, b_data_loader):
+    def __init__(self, config, a_data_loader):
         self.config = config
 
         self.a_data_loader = a_data_loader
-        self.b_data_loader = b_data_loader
 
         self.num_gpu = config.num_gpu
         self.dataset = config.dataset
@@ -54,19 +53,10 @@ class Trainer(object):
 
         if self.num_gpu == 1:
             self.G_AB.cuda()
-            self.G_BA.cuda()
-            self.D_A.cuda()
-            self.D_B.cuda()
 
         elif self.num_gpu > 1:
             self.G_AB = nn.DataParallel(
                 self.G_AB.cuda(), device_ids=list(range(self.num_gpu)))
-            self.G_BA = nn.DataParallel(
-                self.G_BA.cuda(), device_ids=list(range(self.num_gpu)))
-            self.D_A = nn.DataParallel(
-                self.D_A.cuda(), device_ids=list(range(self.num_gpu)))
-            self.D_B = nn.DataParallel(
-                self.D_B.cuda(), device_ids=list(range(self.num_gpu)))
 
         if self.load_path:
             self.load_model()
