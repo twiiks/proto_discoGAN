@@ -62,43 +62,32 @@ class Tester(object):
             self.load_model()
 
     def build_model(self):
-        if self.dataset == 'toy':
-            self.G_AB = GeneratorFC(2, 2,
-                                    [config.fc_hidden_dim] * config.g_num_layer)
-            self.G_BA = GeneratorFC(2, 2,
-                                    [config.fc_hidden_dim] * config.g_num_layer)
+        a_height, a_width, a_channel = self.a_data_loader.shape
+        b_height, b_width, b_channel = self.b_data_loader.shape
 
-            self.D_A = DiscriminatorFC(
-                2, 1, [config.fc_hidden_dim] * config.d_num_layer)
-            self.D_B = DiscriminatorFC(
-                2, 1, [config.fc_hidden_dim] * config.d_num_layer)
+        if self.cnn_type == 0:
+            #conv_dims, deconv_dims = [64, 128, 256, 512], [512, 256, 128, 64]
+            conv_dims, deconv_dims = [64, 128, 256, 512], [256, 128, 64]
+        elif self.cnn_type == 1:
+            #conv_dims, deconv_dims = [32, 64, 128, 256], [256, 128, 64, 32]
+            conv_dims, deconv_dims = [32, 64, 128, 256], [128, 64, 32]
         else:
-            a_height, a_width, a_channel = self.a_data_loader.shape
-            b_height, b_width, b_channel = self.b_data_loader.shape
+            raise Exception(
+                "[!] cnn_type {} is not defined".format(self.cnn_type))
 
-            if self.cnn_type == 0:
-                #conv_dims, deconv_dims = [64, 128, 256, 512], [512, 256, 128, 64]
-                conv_dims, deconv_dims = [64, 128, 256, 512], [256, 128, 64]
-            elif self.cnn_type == 1:
-                #conv_dims, deconv_dims = [32, 64, 128, 256], [256, 128, 64, 32]
-                conv_dims, deconv_dims = [32, 64, 128, 256], [128, 64, 32]
-            else:
-                raise Exception(
-                    "[!] cnn_type {} is not defined".format(self.cnn_type))
+        self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
+                                    deconv_dims, self.num_gpu)
+        self.G_BA = GeneratorCNN(b_channel, a_channel, conv_dims,
+                                    deconv_dims, self.num_gpu)
 
-            self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
-                                     deconv_dims, self.num_gpu)
-            self.G_BA = GeneratorCNN(b_channel, a_channel, conv_dims,
-                                     deconv_dims, self.num_gpu)
+        self.D_A = DiscriminatorCNN(a_channel, 1, conv_dims, self.num_gpu)
+        self.D_B = DiscriminatorCNN(b_channel, 1, conv_dims, self.num_gpu)
 
-            self.D_A = DiscriminatorCNN(a_channel, 1, conv_dims, self.num_gpu)
-            self.D_B = DiscriminatorCNN(b_channel, 1, conv_dims, self.num_gpu)
+        self.G_AB.apply(weights_init)
+        self.G_BA.apply(weights_init)
 
-            self.G_AB.apply(weights_init)
-            self.G_BA.apply(weights_init)
-
-            self.D_A.apply(weights_init)
-            self.D_B.apply(weights_init)
+        self.D_A.apply(weights_init)
+        self.D_B.apply(weights_init)
 
     def load_model(self):
         print("[*] Load models from {}...".format(self.load_path))
