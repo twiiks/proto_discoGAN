@@ -118,65 +118,18 @@ class Tester(object):
 
         print("[*] Model loaded: {}".format(G_AB_filename))
 
-    def generate_with_A(self, inputs, path, idx=None):
+    def generate_with_A(self, inputs):
         x_AB = self.G_AB(inputs)
-        x_ABA = self.G_BA(x_AB)
-
-        x_AB_path = '{}/{}_x_AB.png'.format(path, idx)
-        x_ABA_path = '{}/{}_x_ABA.png'.format(path, idx)
-
-        vutils.save_image(x_AB.data, x_AB_path)
-        print("[*] Samples saved: {}".format(x_AB_path))
-
-        vutils.save_image(x_ABA.data, x_ABA_path)
-        print("[*] Samples saved: {}".format(x_ABA_path))
-
-    def test(self):
-        batch_size = self.config.sample_per_image
-        A_loader, B_loader = iter(self.a_data_loader), iter(self.b_data_loader)
-
-        test_dir = os.path.join(self.model_dir, 'test')
-        if not os.path.exists(test_dir):
-            os.makedirs(test_dir)
-
-        step = 0
-        while True:
-            try:
-                x_A, x_B = self._get_variable(
-                    next(A_loader)), self._get_variable(next(B_loader))
-            except StopIteration:
-                print("[!] Test sample generation finished. Samples are in {}".
-                      format(test_dir))
-                break
-
-            vutils.save_image(x_A.data, '{}/{}_x_A.png'.format(test_dir, step))
-            vutils.save_image(x_B.data, '{}/{}_x_B.png'.format(test_dir, step))
-
-            self.generate_with_A(x_A, test_dir, idx=step)
-            self.generate_with_B(x_B, test_dir, idx=step)
-
-            self.generate_infinitely(
-                x_A, test_dir, input_type="A", count=10, nrow=4, idx=step)
-            self.generate_infinitely(
-                x_B, test_dir, input_type="B", count=10, nrow=4, idx=step)
-
-            step += 1
-    ## made by twiiks
-
-    def generate_with_A_retJPG(self, inputs, path, idx=None):
-        x_AB = self.G_AB(inputs)
-
         return x_AB.data
 
-    def testAB(self):
+    def test(self):
         batch_size = self.config.sample_per_image
         A_loader = iter(self.a_data_loader)
 
         x_A = self._get_variable(next(A_loader))
+        img_AB = self.generate_with_A_retJPG(x_A)
+        return img_AB
 
-        x_AB = self.generate_with_A_retJPG(x_A, test_dir, idx=step)
-        return x_AB
-    
     def _get_variable(self, inputs):
         if self.num_gpu > 0:
             out = Variable(inputs.cuda())
