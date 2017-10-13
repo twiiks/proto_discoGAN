@@ -24,7 +24,7 @@ def weights_init(m):
 
 class Tester(object):
 
-    def __init__(self, config, a_data_loader):
+    def __init__(self, config, a_data_loader, name_pth):
         self.config = config
 
         self.a_data_loader = a_data_loader
@@ -81,30 +81,30 @@ class Tester(object):
     def load_model(self):
         print("[*] Load models from {}...".format(self.load_path))
 
-        paths = glob(os.path.join(self.load_path, 'G_AB_*.pth'))
-        paths.sort()
+        # paths = glob(os.path.join(self.load_path, '%s.pth' % name_pth))
+        # paths.sort()
 
-        if len(paths) == 0:
-            print("[!] No checkpoint found in {}...".format(self.load_path))
-            return
+        # if len(paths) == 0:
+        #     print("[!] No checkpoint found in {}...".format(self.load_path))
+        #     return
 
-        idxes = [
-            int(os.path.basename(path.split('.')[0].split('_')[-1]))
-            for path in paths
-        ]
-        self.start_step = max(idxes)
+        # idxes = [
+        #     int(os.path.basename(path.split('.')[0].split('_')[-1]))
+        #     for path in paths
+        # ]
+        # self.start_step = max(idxes)
 
         if self.num_gpu == 0:
             map_location = lambda storage, loc: storage
         else:
             map_location = None
 
-        G_AB_filename = '{}/G_AB_{}.pth'.format(self.load_path, self.start_step)
+        G_AB_filename = '{}/{}.pth'.format(self.load_path, self.name_pth)
         self.G_AB.load_state_dict(
             torch.load(G_AB_filename, map_location=map_location))
 
         print("[*] Model loaded: {}".format(G_AB_filename))
-  
+    
     def generate_with_A(self, inputs):
         x_AB = self.G_AB(inputs)
         return x_AB.data
