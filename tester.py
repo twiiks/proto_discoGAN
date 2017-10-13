@@ -114,7 +114,7 @@ class Tester(object):
         A_loader = iter(self.a_data_loader)
 
         x_A = self._get_variable(next(A_loader))
-        img_AB = self.generate_with_A_retJPG(x_A)
+        img_AB = self.generate_with_A(x_A)
         return img_AB
 
     def _get_variable(self, inputs):
