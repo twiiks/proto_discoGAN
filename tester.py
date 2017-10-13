@@ -12,6 +12,7 @@ from torch.autograd import Variable
 from models import *
 from data_loader import get_loader
 
+
 def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
@@ -73,8 +74,8 @@ class Tester(object):
             raise Exception(
                 "[!] cnn_type {} is not defined".format(self.cnn_type))
 
-        self.G_AB = GeneratorCNN(a_channel, a_channel, conv_dims,
-                                    deconv_dims, self.num_gpu)
+        self.G_AB = GeneratorCNN(a_channel, a_channel, conv_dims, deconv_dims,
+                                 self.num_gpu)
         self.G_AB.apply(weights_init)
 
     def load_model(self):
@@ -113,12 +114,13 @@ class Tester(object):
 
         G_AB_filename = '{}/G_AB_{}.pth'.format(self.load_path, self.start_step)
         checkpoint = torch.load(G_AB_filename)
+        print(checkpoint)
         state_dict = checkpoint['state_dict']
         print('loaded state dict:', state_dict.keys())
 
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
-            name = k[0:9] + k[16:] # remove `module.`
+            name = k[0:9] + k[16:]  # remove `module.`
         if k[0] == 'f':
             new_state_dict[name] = v
         else:
@@ -129,7 +131,7 @@ class Tester(object):
         print(new_state_dict.keys())
 
         # saving model:
-        model_dict={}
+        model_dict = {}
         model_dict['model_def'] = model
         model_dict['weights'] = model.state_dict()
         torch.save(model_dict, 'model_cpu.pth')
