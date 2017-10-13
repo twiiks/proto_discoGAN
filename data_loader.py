@@ -8,11 +8,14 @@ import torch
 from torchvision import transforms
 
 PIX2PIX_DATASETS = [
-    'facades', 'cityscapes', 'maps', 'edges2shoes', 'edges2handbags']
+    'facades', 'cityscapes', 'maps', 'edges2shoes', 'edges2handbags'
+]
+
 
 def makedirs(path):
     if not os.path.exists(path):
         os.makedirs(path)
+
 
 def pix2pix_split_images(root):
     paths = glob(os.path.join(root, "train/*"))
@@ -37,14 +40,20 @@ def pix2pix_split_images(root):
 
         height, width, channel = data.shape
 
-        a_image = Image.fromarray(data[:,:width/2].astype(np.uint8))
-        b_image = Image.fromarray(data[:,width/2:].astype(np.uint8))
+        a_image = Image.fromarray(data[:, :width / 2].astype(np.uint8))
+        b_image = Image.fromarray(data[:, width / 2:].astype(np.uint8))
 
         a_image.save(a_image_path)
         b_image.save(b_image_path)
 
+
 class Dataset(torch.utils.data.Dataset):
-    def __init__(self, root, scale_size, data_type, skip_pix2pix_processing=False):
+
+    def __init__(self,
+                 root,
+                 scale_size,
+                 data_type,
+                 skip_pix2pix_processing=False):
         self.root = root
         if not os.path.exists(self.root):
             raise Exception("[!] {} not exists.".format(root))
@@ -59,8 +68,8 @@ class Dataset(torch.utils.data.Dataset):
         self.shape = list(Image.open(self.paths[0]).size) + [3]
 
         self.transform = transforms.Compose([
-            transforms.Scale(scale_size), 
-            transforms.ToTensor(), 
+            transforms.Scale(scale_size),
+            transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
 
@@ -71,19 +80,26 @@ class Dataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.paths)
 
-def get_loader(root, batch_size, scale_size, num_workers=2,
-               skip_pix2pix_processing=False, shuffle=True):
+
+def get_loader(root,
+               batch_size,
+               scale_size,
+               num_workers=2,
+               skip_pix2pix_processing=False,
+               shuffle=True):
     a_data_set, b_data_set = \
         Dataset(root, scale_size, "A", skip_pix2pix_processing), \
         Dataset(root, scale_size, "B", skip_pix2pix_processing)
-    a_data_loader = torch.utils.data.DataLoader(dataset=a_data_set,
-                                                batch_size=batch_size,
-                                                shuffle=True,
-                                                num_workers=num_workers)
-    b_data_loader = torch.utils.data.DataLoader(dataset=b_data_set,
-                                                batch_size=batch_size,
-                                                shuffle=True,
-                                                num_workers=num_workers)
+    a_data_loader = torch.utils.data.DataLoader(
+        dataset=a_data_set,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers)
+    b_data_loader = torch.utils.data.DataLoader(
+        dataset=b_data_set,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers)
     a_data_loader.shape = a_data_set.shape
     b_data_loader.shape = b_data_set.shape
 

@@ -1,10 +1,9 @@
-
-
 import os
 import json
 import logging
 import numpy as np
 from datetime import datetime
+
 
 def prepare_dirs_and_logger(config):
     formatter = logging.Formatter("%(asctime)s:%(levelname)s::%(message)s")
@@ -25,7 +24,8 @@ def prepare_dirs_and_logger(config):
             if config.load_path.startswith(config.dataset):
                 config.model_name = config.load_path
             else:
-                config.model_name = "{}_{}".format(config.dataset, config.load_path)
+                config.model_name = "{}_{}".format(config.dataset,
+                                                   config.load_path)
     else:
         config.model_name = "{}_{}".format(config.dataset, get_time())
 
@@ -37,8 +37,10 @@ def prepare_dirs_and_logger(config):
         if not os.path.exists(path):
             os.makedirs(path)
 
+
 def get_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
 
 def save_config(config):
     param_path = os.path.join(config.model_dir, "params.json")
