@@ -103,40 +103,8 @@ class Tester(object):
         self.G_AB.load_state_dict(
             torch.load(G_AB_filename, map_location=map_location))
 
-        self.cuda_to_cpu()
-
         print("[*] Model loaded: {}".format(G_AB_filename))
-
-    from collections import OrderedDict
-
-    def cuda_to_cpu(self):
-        model = self.G_AB
-
-        G_AB_filename = '{}/G_AB_{}.pth'.format(self.load_path, self.start_step)
-        checkpoint = torch.load(G_AB_filename)
-        # print(checkpoint)
-        # state_dict = checkpoint['state_dict']
-        state_dict = checkpoint
-        print('loaded state dict:', state_dict.keys())
-
-        new_state_dict = OrderedDict()
-        for k, v in state_dict.items():
-            name = k[0:9] + k[16:]  # remove `module.`
-        if k[0] == 'f':
-            new_state_dict[name] = v
-        else:
-            new_state_dict[k] = v
-        model.load_state_dict(new_state_dict)
-        model.cpu()
-        print('Now see converted state dict:')
-        print(new_state_dict.keys())
-
-        # saving model:
-        model_dict = {}
-        model_dict['model_def'] = model
-        model_dict['weights'] = model.state_dict()
-        torch.save(model_dict, 'model_cpu.pth')
-
+  
     def generate_with_A(self, inputs):
         x_AB = self.G_AB(inputs)
         return x_AB.data
