@@ -1,0 +1,75 @@
+import torch
+
+from tester import Tester
+from trainer import Trainer
+from config import get_config
+from data_loader import get_loader
+from utils import prepare_dirs_and_logger, save_config
+
+
+import base64
+
+
+def getNumJong(jongIdx):
+    if jongIdx == 0:
+        return 0
+    elif jongIdx in [1, 4, 7, 8, 16, 17, 19, 21, 22, 23, 24, 25, 26, 27]:
+        return 1
+    else:
+        return 2
+
+
+def getPosJung(jungIdx):
+    if jungIdx in [0, 1, 2, 3, 4, 5, 6, 7, 20]:
+        return 1  # right
+    elif jungIdx in [8, 12, 13, 17, 18]:
+        return 4  # bottom
+    else:
+        return 7  # both
+
+def UnicodeToKoreanClass(unicode):
+    if unicode not in range(0xAC00, 0xD7AF + 1):
+        return -1  # 오류 내고 싶다
+
+    jongIdx = (unicode - 0xAC00) % 28
+    jungIdx = (((unicode - 0xAC00) - jongIdx) / 28) % 21
+
+    numJong = getNumJong(jongIdx)
+    posJung = getPosJung(jungIdx)
+
+    classNum = numJong + posJung
+    return (classNum)
+    
+# written : [unicode: path]
+def written2all(written):
+    STANDARD_L = [0, '', '', '', 'B204', 'BD90', '', '', '', '']
+
+    for code, path in written.items():
+        config, _ = get_config()
+        config.data_path = path
+        config.dataset = hex(int(code)).split('x')[1].upper()
+        print(config.dataset)
+        config.sample_per_image = 1
+        uniclass = UnicodeToKoreanClass(code)
+        config.load_path = './pths/%s/' % (STANDARD_L[uniclass])
+        
+        name_pth = '%s_%s' % (STANDARD_L[uniclass], config.dataset)
+        prepare_dirs_and_logger(config)
+
+        torch.manual_seed(config.random_seed)
+        if config.num_gpu > 0:
+            torch.cuda.manual_seed(config.random_seed)
+        data_path = config.data_path
+        batch_size = config.sample_per_image
+
+        a_data_loader = get_loader_a(
+        data_path, batch_size, config.input_scale_size, config.num_worker,
+        config.skip_pix2pix_processing)
+        tester = Tester(config, a_data_loader, name_pth)
+        tester.test()
+
+if __name__ == "__main__":
+    dic = {0xACE0 : './data/test'}
+    written2all(dic)
+
+
