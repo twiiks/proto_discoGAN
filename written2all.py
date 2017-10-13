@@ -27,6 +27,7 @@ def getPosJung(jungIdx):
     else:
         return 7  # both
 
+
 def UnicodeToKoreanClass(unicode):
     if unicode not in range(0xAC00, 0xD7AF + 1):
         return -1  # 오류 내고 싶다
@@ -39,7 +40,8 @@ def UnicodeToKoreanClass(unicode):
 
     classNum = numJong + posJung
     return (classNum)
-    
+
+
 # written : [unicode: path]
 def written2all(written):
     STANDARD_L = [0, '', '', '', 'B204', 'BD90', '', '', '', '']
@@ -61,22 +63,19 @@ def written2all(written):
         data_path = config.data_path
         batch_size = config.sample_per_image
 
-        a_data_loader = get_loader_a(
-        data_path, batch_size, config.input_scale_size, config.num_worker,
-        config.skip_pix2pix_processing)
+        a_data_loader = get_loader_a(data_path, batch_size,
+                                     config.input_scale_size, config.num_worker,
+                                     config.skip_pix2pix_processing)
         tester = Tester(config, a_data_loader, name_pth)
         img_AB = tester.test()
         vutils.save_image(img_AB, './{}.png'.format(code))
         with open('./{}.png'.format(code), "rb") as image_file:
-            b64Image = base64.b64encode(image_file.read())
-            ouput[code] = b64Image
-    print(output)
+            b64Image = base64.b64encode(image_file.read()).decode('utf-8')
+            output[code] = b64Image
+
     return output
 
 
-
 if __name__ == "__main__":
-    dic = {0xACE0 : './data/test'}
+    dic = {0xACE0: './data/test'}
     written2all(dic)
-
-
