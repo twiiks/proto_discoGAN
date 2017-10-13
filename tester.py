@@ -63,7 +63,6 @@ class Tester(object):
 
     def build_model(self):
         a_height, a_width, a_channel = self.a_data_loader.shape
-        b_height, b_width, b_channel = self.b_data_loader.shape
 
         if self.cnn_type == 0:
             #conv_dims, deconv_dims = [64, 128, 256, 512], [512, 256, 128, 64]
@@ -77,17 +76,7 @@ class Tester(object):
 
         self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
                                     deconv_dims, self.num_gpu)
-        self.G_BA = GeneratorCNN(b_channel, a_channel, conv_dims,
-                                    deconv_dims, self.num_gpu)
-
-        self.D_A = DiscriminatorCNN(a_channel, 1, conv_dims, self.num_gpu)
-        self.D_B = DiscriminatorCNN(b_channel, 1, conv_dims, self.num_gpu)
-
         self.G_AB.apply(weights_init)
-        self.G_BA.apply(weights_init)
-
-        self.D_A.apply(weights_init)
-        self.D_B.apply(weights_init)
 
     def load_model(self):
         print("[*] Load models from {}...".format(self.load_path))
