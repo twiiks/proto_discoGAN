@@ -114,8 +114,9 @@ class Tester(object):
 
         G_AB_filename = '{}/G_AB_{}.pth'.format(self.load_path, self.start_step)
         checkpoint = torch.load(G_AB_filename)
-        print(checkpoint)
-        state_dict = checkpoint['state_dict']
+        # print(checkpoint)
+        # state_dict = checkpoint['state_dict']
+        state_dict = checkpoint
         print('loaded state dict:', state_dict.keys())
 
         new_state_dict = OrderedDict()
