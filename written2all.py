@@ -5,6 +5,7 @@ from trainer import Trainer
 from config import get_config
 from data_loader import get_loader_a
 from utils import prepare_dirs_and_logger, save_config
+import torchvision.utils as vutils
 
 import base64
 
@@ -47,7 +48,6 @@ def written2all(written):
         config, _ = get_config()
         config.data_path = path
         config.dataset = hex(int(code)).split('x')[1].upper()
-        print(config.dataset)
         config.sample_per_image = 1
         uniclass = UnicodeToKoreanClass(code)
         config.load_path = './pths/%s' % (STANDARD_L[uniclass])
