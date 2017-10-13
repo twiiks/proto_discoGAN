@@ -103,7 +103,7 @@ class Tester(object):
             torch.load(G_AB_filename, map_location=map_location))
 
         self.cuda_to_cpu()
-        
+
         print("[*] Model loaded: {}".format(G_AB_filename))
 
     from collections import OrderedDict
@@ -118,7 +118,7 @@ class Tester(object):
 
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
-        name = k[0:9] + k[16:] # remove `module.`
+            name = k[0:9] + k[16:] # remove `module.`
         if k[0] == 'f':
             new_state_dict[name] = v
         else:
