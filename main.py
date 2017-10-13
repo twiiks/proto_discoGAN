@@ -28,7 +28,7 @@ def main(config):
         data_path, batch_size, config.input_scale_size, config.num_worker,
         config.skip_pix2pix_processing)
 
-    trainer = Trainer(config, a_data_loader, b_data_loader)
+    # trainer = Trainer(config, a_data_loader, b_data_loader)
     tester = Tester(config, a_data_loader)
 
     if config.is_train:
