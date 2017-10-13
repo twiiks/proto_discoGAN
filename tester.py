@@ -115,6 +115,9 @@ class Tester(object):
 
         x_A = self._get_variable(next(A_loader))
         img_AB = self.generate_with_A(x_A)
+        ## test
+        vutils.save_image(img_AB, './A.png')
+        ##
         return img_AB
 
     def _get_variable(self, inputs):
