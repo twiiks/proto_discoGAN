@@ -66,7 +66,14 @@ def written2all(written):
         config.skip_pix2pix_processing)
         tester = Tester(config, a_data_loader, name_pth)
         img_AB = tester.test()
-        print(img_AB)
+        vutils.save_image(img_AB, './{}.png'.format(code))
+        with open('./{}.png'.format(code), "rb") as image_file:
+            b64Image = base64.b64encode(image_file.read())
+            ouput[code] = b64Image
+    print(output)
+    return output
+
+
 
 if __name__ == "__main__":
     dic = {0xACE0 : './data/test'}
