@@ -102,19 +102,6 @@ class Tester(object):
         G_AB_filename = '{}/G_AB_{}.pth'.format(self.load_path, self.start_step)
         self.G_AB.load_state_dict(
             torch.load(G_AB_filename, map_location=map_location))
-        self.G_BA.load_state_dict(
-            torch.load(
-                '{}/G_BA_{}.pth'.format(self.load_path, self.start_step),
-                map_location=map_location))
-
-        self.D_A.load_state_dict(
-            torch.load(
-                '{}/D_A_{}.pth'.format(self.load_path, self.start_step),
-                map_location=map_location))
-        self.D_B.load_state_dict(
-            torch.load(
-                '{}/D_B_{}.pth'.format(self.load_path, self.start_step),
-                map_location=map_location))
 
         print("[*] Model loaded: {}".format(G_AB_filename))
 
