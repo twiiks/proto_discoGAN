@@ -74,7 +74,7 @@ class Tester(object):
             raise Exception(
                 "[!] cnn_type {} is not defined".format(self.cnn_type))
 
-        self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
+        self.G_AB = GeneratorCNN(a_channel, a_channel, conv_dims,
                                     deconv_dims, self.num_gpu)
         self.G_AB.apply(weights_init)
 
