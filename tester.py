@@ -22,12 +22,13 @@ def weights_init(m):
         m.bias.data.fill_(0)
 
 
-class Tester(object):
+class Trainer(object):
 
     def __init__(self, config, a_data_loader, b_data_loader):
         self.config = config
 
         self.a_data_loader = a_data_loader
+        self.b_data_loader = b_data_loader
 
         self.num_gpu = config.num_gpu
         self.dataset = config.dataset
@@ -53,41 +54,61 @@ class Tester(object):
 
         if self.num_gpu == 1:
             self.G_AB.cuda()
+            self.G_BA.cuda()
+            self.D_A.cuda()
+            self.D_B.cuda()
 
         elif self.num_gpu > 1:
             self.G_AB = nn.DataParallel(
                 self.G_AB.cuda(), device_ids=list(range(self.num_gpu)))
+            self.G_BA = nn.DataParallel(
+                self.G_BA.cuda(), device_ids=list(range(self.num_gpu)))
+            self.D_A = nn.DataParallel(
+                self.D_A.cuda(), device_ids=list(range(self.num_gpu)))
+            self.D_B = nn.DataParallel(
+                self.D_B.cuda(), device_ids=list(range(self.num_gpu)))
 
         if self.load_path:
             self.load_model()
 
     def build_model(self):
-        
-        a_height, a_width, a_channel = self.a_data_loader.shape
+        if self.dataset == 'toy':
+            self.G_AB = GeneratorFC(2, 2,
+                                    [config.fc_hidden_dim] * config.g_num_layer)
+            self.G_BA = GeneratorFC(2, 2,
+                                    [config.fc_hidden_dim] * config.g_num_layer)
 
-        if self.cnn_type == 0:
-            #conv_dims, deconv_dims = [64, 128, 256, 512], [512, 256, 128, 64]
-            conv_dims, deconv_dims = [64, 128, 256, 512], [256, 128, 64]
-        elif self.cnn_type == 1:
-            #conv_dims, deconv_dims = [32, 64, 128, 256], [256, 128, 64, 32]
-            conv_dims, deconv_dims = [32, 64, 128, 256], [128, 64, 32]
+            self.D_A = DiscriminatorFC(
+                2, 1, [config.fc_hidden_dim] * config.d_num_layer)
+            self.D_B = DiscriminatorFC(
+                2, 1, [config.fc_hidden_dim] * config.d_num_layer)
         else:
-            raise Exception(
-                "[!] cnn_type {} is not defined".format(self.cnn_type))
+            a_height, a_width, a_channel = self.a_data_loader.shape
+            b_height, b_width, b_channel = self.b_data_loader.shape
 
-        self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
-                                    deconv_dims, self.num_gpu)
-        self.G_BA = GeneratorCNN(b_channel, a_channel, conv_dims,
-                                    deconv_dims, self.num_gpu)
+            if self.cnn_type == 0:
+                #conv_dims, deconv_dims = [64, 128, 256, 512], [512, 256, 128, 64]
+                conv_dims, deconv_dims = [64, 128, 256, 512], [256, 128, 64]
+            elif self.cnn_type == 1:
+                #conv_dims, deconv_dims = [32, 64, 128, 256], [256, 128, 64, 32]
+                conv_dims, deconv_dims = [32, 64, 128, 256], [128, 64, 32]
+            else:
+                raise Exception(
+                    "[!] cnn_type {} is not defined".format(self.cnn_type))
 
-        self.D_A = DiscriminatorCNN(a_channel, 1, conv_dims, self.num_gpu)
-        self.D_B = DiscriminatorCNN(b_channel, 1, conv_dims, self.num_gpu)
+            self.G_AB = GeneratorCNN(a_channel, b_channel, conv_dims,
+                                     deconv_dims, self.num_gpu)
+            self.G_BA = GeneratorCNN(b_channel, a_channel, conv_dims,
+                                     deconv_dims, self.num_gpu)
 
-        self.G_AB.apply(weights_init)
-        self.G_BA.apply(weights_init)
+            self.D_A = DiscriminatorCNN(a_channel, 1, conv_dims, self.num_gpu)
+            self.D_B = DiscriminatorCNN(b_channel, 1, conv_dims, self.num_gpu)
 
-        self.D_A.apply(weights_init)
-        self.D_B.apply(weights_init)
+            self.G_AB.apply(weights_init)
+            self.G_BA.apply(weights_init)
+
+            self.D_A.apply(weights_init)
+            self.D_B.apply(weights_init)
 
     def load_model(self):
         print("[*] Load models from {}...".format(self.load_path))
