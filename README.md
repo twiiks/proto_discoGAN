@@ -1,4 +1,4 @@
-processing_discoGAN
+proto_discoGAN
 ===========================
 
 개요
