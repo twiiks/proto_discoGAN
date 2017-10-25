@@ -1,28 +1,29 @@
-proto_discoGAN
-===========================
+## proto_discoGAN
 
-개요
----------------------------
+### Motivation
+- How to lower the dataset for learning
+- How to quickly learn user's own style
 
-- 한글 폰트 자동 생성 서비스 [fontto](http://fontto.creatorlink.net/) 의 한글 학습 모델링 연구를 위한 프로젝트입니다.
-- [discoGAN](https://arxiv.org/abs/1703.05192)을 참고하여 한글 폰트 자동완성 모델링을 연구합니다.
-- 미리 학습된 모델을 pth 파일에서 업로드해 새로운 한글 이미지를 생성합니다.
+### Approach #4
+- If you can learn the relation between one character(for example '가') and another(for example '나'), you would generate your own styled '나' with your input '가'
 
-api
----------------------------
 
-written2all 프로그램은 api로 사용될 수 있도록 함수로 제공됩니다.
+## Structure
+- **written2all.py** : get input as {unicode_input : path_to_input_image} and return output as {unicode_output : path_to_output_image} after editting the raw images
+- **reference** : implemented code for discoGAN
 
-- 입력 : written = {unicode_input : path_to_input_image}
-- 출력 : output = {unicode_output : path_to_output_image}
 
-실행파일
----------------------------
+## Limits
+- Many different styled fonts interrupt learning general shape of characters generating noise
+- lack of free Korean character font
+
+
+## Example & Screenshot
+![screenshot1](https://s3.ap-northeast-2.amazonaws.com/fontto/repository-images/%E1%84%89%E1%85%B3%E1%84%8F%E1%85%B3%E1%84%85%E1%85%B5%E1%86%AB%E1%84%89%E1%85%A3%E1%86%BA+2017-10-24+%E1%84%8B%E1%85%A9%E1%84%92%E1%85%AE+2.57.17.png)
+
+
+## Reference
+> [discoGAN](https://github.com/SKTBrain/DiscoGAN)
+> [paper](https://arxiv.org/abs/1703.05192)
 written2all 프로그램을 직접 구동할 수 있습니다.
 아래 코드는 미리 학습시켜놓은 데이터를 이용해 데모를 진행합니다.
-
-    $ python3 written2all.py
-
-라이센스
-----------------------------
-이 코드의 모든 권리는 twiiks에서 소유합니다.
